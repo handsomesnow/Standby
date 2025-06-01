@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音频模式选择视频待机画面</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            color: white;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 300;
+            margin-bottom: 15px;
+            color: #4cc9f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .settings-section {
+            margin-bottom: 35px;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            color: #4361ee;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .file-input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4a9eff;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.2);
+        }
+        
+        .audio-modes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .mode-option {
+            background: rgba(30, 30, 50, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-align: center;
+        }
+        
+        .mode-option:hover {
+            background: rgba(40, 40, 60, 0.7);
+            transform: translateY(-5px);
+        }
+        
+        .mode-option.selected {
+            background: rgba(67, 97, 238, 0.15);
+            border-color: #4361ee;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .mode-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #4a9eff;
+        }
+        
+        .mode-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .mode-desc {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        .custom-audio-input {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .action-btn {
+            padding: 16px 45px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+        
+        #start-btn {
+            background: linear-gradient(135deg, #4a9eff, #3a0ca3);
+            color: white;
+            box-shadow: 0 5px 20px rgba(74, 158, 255, 0.4);
+        }
+        
+        #start-btn:hover {
+            background: linear-gradient(135deg, #3a8ce6, #2d0a7f);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(74, 158, 255, 0.6);
+        }
+        
+        #exit-btn {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+        
+        #exit-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .instructions {
+            margin-top: 40px;
+            padding: 25px;
+            background: rgba(30, 30, 50, 0.5);
+            border-radius: 15px;
+            font-size: 1.05rem;
+            border-left: 4px solid #4a9eff;
+        }
+        
+        .instructions h3 {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            color: #4cc9f0;
+        }
+        
+        .instructions ul {
+            padding-left: 30px;
+        }
+        
+        .instructions li {
+            margin-bottom: 15px;
+            line-height: 1.7;
+            position: relative;
+        }
+        
+        .instructions li:before {
+            content: "•";
+            color: #4a9eff;
+            position: absolute;
+            left: -20px;
+            font-size: 1.4rem;
+        }
+        
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(76, 201, 240, 0.1);
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
+        
+        /* 全屏显示元素 */
+        #fullscreen-display {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+        }
+        
+        #video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+        
+        #time-display {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            text-align: right;
+            z-index: 2;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.8);
+            padding: 15px 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        #time {
+            font-size: 5.5rem;
+            font-weight: 300;
+            letter-spacing: -3px;
+            color: rgba(255, 255, 255, 0.95);
+            font-variant-numeric: tabular-nums;
+        }
+        
+        #volume-control {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            z-index: 3;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(5px);
+        }
+        
+        #volume-icon {
+            font-size: 1.5rem;
+            width: 30px;
+            text-align: center;
+            color: #4a9eff;
+        }
+        
+        #volume-slider {
+            width: 130px;
+            -webkit-appearance: none;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        #volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4a9eff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(74, 158, 255, 0.5);
+        }
+        
+        .control-panel {
+            position: absolute;
+            bottom: -100px;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            z-index: 4;
+            transition: bottom 0.5s ease;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-btn:hover {
+            background: rgba(74, 158, 255, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                width: 95%;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .audio-modes {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-btn {
+                padding: 14px 30px;
+            }
+            
+            #time {
+                font-size: 4.5rem;
+            }
+            
+            #time-display {
+                top: 30px;
+                right: 30px;
+            }
+            
+            #volume-control {
+                top: 30px;
+                left: 30px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            #time {
+                font-size: 3.8rem;
+            }
+            
+            #time-display {
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+            }
+            
+            #volume-control {
+                top: 20px;
+                left: 20px;
+                padding: 8px 15px;
+            }
+            
+            #volume-slider {
+                width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background" id="background"></div>
+    
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-film"></i> 音频模式选择视频待机画面</h1>
+            <div class="subtitle">在首页选择音频模式，享受个性化视听体验</div>
+        </header>
+        
+        <div class="settings-section">
+            <div class="section-title">
+                <i class="fas fa-video"></i> 视频设置
+            </div>
+            <div class="file-input-group">
+                <label for="video-path"><i class="fas fa-folder-open"></i> 视频文件路径</label>
+                <input type="text" id="video-path" placeholder="例如：E:\HuaweiMoveData\Users\huawei\Desktop\动态壁纸\video.mp4" value="E:\HuaweiMoveData\Users\huawei\Desktop\动态壁纸\keji.mp4">
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <div class="section-title">
+                <i class="fas fa-music"></i> 音频模式选择
+            </div>
+            
+            <div class="audio-modes">
+                <div class="mode-option" id="mode-video-audio">
+                    <div class="mode-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <div class="mode-title">视频原声音频</div>
+                    <div class="mode-desc">播放视频自带的音频</div>
+                </div>
+                
+                <div class="mode-option" id="mode-custom-audio">
+                    <div class="mode-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="mode-title">自定义音频</div>
+                    <div class="mode-desc">播放您指定的背景音乐</div>
+                </div>
+                
+                <div class="mode-option" id="mode-no-audio">
+                    <div class="mode-icon">
+                        <i class="fas fa-volume-mute"></i>
+                    </div>
+                    <div class="mode-title">静音模式</div>
+                    <div class="mode-desc">无任何音频播放</div>
+                </div>
+            </div>
+            
+            <div class="custom-audio-input" id="custom-audio-input">
+                <label for="audio-path"><i class="fas fa-file-audio"></i> 背景音乐路径</label>
+                <input type="text" id="audio-path" placeholder="例如：E:\HuaweiMoveData\Users\huawei\Music\background.mp3" value="E:\HuaweiMoveData\Users\huawei\Desktop\动态壁纸\typing.mp3">
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
+            <ul>
+                <li>在首页选择您喜欢的音频模式</li>
+                <li>右上角显示简约时间，左上角控制音量</li>
+                <li>按空格键暂停/播放视频</li>
+                <li>按ESC键退出全屏模式</li>
+                <li>自定义音频会自动循环播放</li>
+            </ul>
+        </div>
+        
+        <div class="action-buttons">
+            <button id="start-btn" class="action-btn">
+                <i class="fas fa-play"></i> 开始体验
+            </button>
+            <button id="exit-btn" class="action-btn">
+                <i class="fas fa-sign-out-alt"></i> 退出
+            </button>
+        </div>
+    </div>
+    
+    <!-- 全屏显示元素 -->
+    <div id="fullscreen-display">
+        <video id="video-bg" autoplay loop muted playsinline></video>
+        <div id="time-display">
+            <div id="time">00:00</div>
+        </div>
+        <div id="volume-control">
+            <i id="volume-icon" class="fas fa-volume-up"></i>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.7">
+        </div>
+        <div class="control-panel">
+            <button class="control-btn" id="play-pause-btn"><i class="fas fa-pause"></i></button>
+            <button class="control-btn" id="settings-btn"><i class="fas fa-cog"></i></button>
+            <button class="control-btn" id="exit-fullscreen-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <audio id="audio-player"></audio>
+    </div>
+
+    <script>
+        // 创建背景动画粒子
+        function createBackgroundParticles() {
+            const container = document.getElementById('background');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // 随机大小和位置
+                const size = Math.random() * 100 + 50;
+                const left = Math.random() * 100;
+                const animationDuration = Math.random() * 30 + 15;
+                const animationDelay = Math.random() * 5;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${left}%`;
+                particle.style.bottom = `-${size}px`;
+                particle.style.animationDuration = `${animationDuration}s`;
+                particle.style.animationDelay = `${animationDelay}s`;
+                particle.style.opacity = Math.random() * 0.2 + 0.05;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        // 状态变量
+        let isFullscreen = false;
+        let isPlaying = true;
+        let isMuted = false;
+        let mouseMovementTimeout;
+        let audioMode = 'no-audio'; // 'video-audio', 'custom-audio', 'no-audio'
+        let currentVolume = 0.7;
+        let lastMinute = -1;
+        
+        // DOM元素
+        const videoElement = document.getElementById('video-bg');
+        const audioPlayer = document.getElementById('audio-player');
+        const timeDisplay = document.getElementById('time-display');
+        const timeElement = document.getElementById('time');
+        const volumeControl = document.getElementById('volume-control');
+        const volumeIcon = document.getElementById('volume-icon');
+        const volumeSlider = document.getElementById('volume-slider');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const settingsBtn = document.getElementById('settings-btn');
+        const exitFullscreenBtn = document.getElementById('exit-fullscreen-btn');
+        const fullscreenDisplay = document.getElementById('fullscreen-display');
+        const container = document.querySelector('.container');
+        
+        // 更新时间显示
+        function updateDateTime() {
+            const now = new Date();
+            const currentMinute = now.getMinutes();
+            
+            // 只在分钟变化时更新（减少更新频率）
+            if (currentMinute !== lastMinute) {
+                lastMinute = currentMinute;
+                
+                // 格式化时间
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                
+                timeElement.textContent = `${hours}:${minutes}`;
+                
+                // 添加平滑过渡效果
+                timeElement.style.opacity = 0;
+                setTimeout(() => {
+                    timeElement.style.opacity = 1;
+                }, 50);
+            }
+        }
+        
+        // 加载视频
+        function loadVideo(videoPath) {
+            if (!videoPath) {
+                alert('请输入视频文件路径');
+                return false;
+            }
+            
+            // 检查路径是否包含文件名
+            if (!videoPath.match(/\.(mp4|mov|avi|mkv|webm)$/i)) {
+                alert('请提供完整的视频文件名（包括扩展名）');
+                return false;
+            }
+            
+            // 尝试加载视频
+            try {
+                // 在浏览器中加载本地文件需要使用file:///协议
+                const fileUrl = 'file:///' + videoPath.replace(/\\/g, '/');
+                videoElement.src = fileUrl;
+                
+                // 初始静音状态
+                videoElement.muted = true;
+                
+                return true;
+            } catch (e) {
+                alert('发生错误: ' + e.message);
+                return false;
+            }
+        }
+        
+        // 加载音频
+        function loadAudio(audioPath) {
+            if (!audioPath) {
+                alert('请输入背景音乐路径');
+                return false;
+            }
+            
+            // 检查路径是否包含文件名
+            if (!audioPath.match(/\.(mp3|wav|ogg)$/i)) {
+                alert('请提供完整的音频文件名（包括扩展名）');
+                return false;
+            }
+            
+            // 尝试加载音频
+            try {
+                const fileUrl = 'file:///' + audioPath.replace(/\\/g, '/');
+                audioPlayer.src = fileUrl;
+                audioPlayer.volume = currentVolume;
+                // 关键改进：设置音频循环播放
+                audioPlayer.loop = true;
+                return true;
+            } catch (e) {
+                alert('音频加载错误: ' + e.message);
+                return false;
+            }
+        }
+        
+        // 进入全屏模式
+        function enterFullscreenMode() {
+            fullscreenDisplay.style.display = 'block';
+            
+            // 隐藏设置界面
+            container.style.display = 'none';
+            
+            // 请求全屏
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(console.log);
+            }
+            
+            // 确保视频播放
+            videoElement.play();
+            isPlaying = true;
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            
+            // 初始化时间显示
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            timeElement.textContent = `${hours}:${minutes}`;
+            lastMinute = now.getMinutes();
+            
+            // 根据选择的音频模式设置音频
+            applyAudioMode();
+        }
+        
+        // 应用音频模式
+        function applyAudioMode() {
+            if (audioMode === 'video-audio') {
+                // 使用视频原声音频
+                videoElement.muted = false;
+                if (audioPlayer) audioPlayer.pause();
+                volumeIcon.className = 'fas fa-film';
+            } else if (audioMode === 'custom-audio') {
+                // 使用自定义音频
+                videoElement.muted = true;
+                if (audioPlayer) {
+                    audioPlayer.play();
+                    volumeIcon.className = 'fas fa-music';
+                }
+            } else {
+                // 静音模式
+                videoElement.muted = true;
+                if (audioPlayer) audioPlayer.pause();
+                volumeIcon.className = 'fas fa-volume-mute';
+            }
+            
+            // 设置音量
+            setVolume();
+        }
+        
+        // 退出全屏模式
+        function exitFullscreenMode() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+            
+            // 显示设置界面
+            container.style.display = 'block';
+            fullscreenDisplay.style.display = 'none';
+            
+            // 暂停媒体
+            videoElement.pause();
+            if (audioPlayer) audioPlayer.pause();
+        }
+        
+        // 显示控制面板
+        function showControlPanel() {
+            document.querySelector('.control-panel').style.bottom = '30px';
+            
+            // 设置3秒后自动隐藏
+            clearTimeout(mouseMovementTimeout);
+            mouseMovementTimeout = setTimeout(hideControlPanel, 3000);
+        }
+        
+        // 隐藏控制面板
+        function hideControlPanel() {
+            document.querySelector('.control-panel').style.bottom = '-100px';
+        }
+        
+        // 切换播放状态
+        function togglePlayPause() {
+            if (isPlaying) {
+                videoElement.pause();
+                if (audioPlayer && audioMode === 'custom-audio') audioPlayer.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                isPlaying = false;
+            } else {
+                videoElement.play();
+                if (audioPlayer && audioMode === 'custom-audio') audioPlayer.play();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                isPlaying = true;
+            }
+        }
+        
+        // 设置音量
+        function setVolume() {
+            currentVolume = volumeSlider.value;
+            
+            if (audioMode === 'video-audio') {
+                videoElement.volume = currentVolume;
+            } else if (audioMode === 'custom-audio') {
+                if (audioPlayer) audioPlayer.volume = currentVolume;
+            }
+            
+            // 更新音量图标
+            if (currentVolume <= 0) {
+                volumeIcon.className = 'fas fa-volume-mute';
+            } else if (currentVolume < 0.5) {
+                volumeIcon.className = 'fas fa-volume-down';
+            } else {
+                volumeIcon.className = 'fas fa-volume-up';
+            }
+        }
+        
+        // 初始化
+        window.addEventListener('load', function() {
+            createBackgroundParticles();
+            
+            // 设置音频模式选择
+            document.querySelectorAll('.mode-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除所有选中状态
+                    document.querySelectorAll('.mode-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // 添加当前选中状态
+                    this.classList.add('selected');
+                    
+                    // 设置音频模式
+                    audioMode = this.id.replace('mode-', '');
+                    
+                    // 显示/隐藏自定义音频输入
+                    if (audioMode === 'custom-audio') {
+                        document.getElementById('custom-audio-input').style.display = 'block';
+                    } else {
+                        document.getElementById('custom-audio-input').style.display = 'none';
+                    }
+                });
+            });
+            
+            // 默认选择静音模式
+            document.getElementById('mode-no-audio').click();
+            
+            // 设置开始按钮事件
+            document.getElementById('start-btn').addEventListener('click', function() {
+                const videoPath = document.getElementById('video-path').value;
+                const audioPath = document.getElementById('audio-path').value;
+                
+                if (loadVideo(videoPath)) {
+                    // 如果选择了自定义音频模式，加载音频
+                    if (audioMode === 'custom-audio') {
+                        if (loadAudio(audioPath)) {
+                            enterFullscreenMode();
+                        }
+                    } else {
+                        enterFullscreenMode();
+                    }
+                }
+            });
+            
+            // 设置退出按钮事件
+            document.getElementById('exit-btn').addEventListener('click', function() {
+                window.close();
+            });
+            
+            // 设置控制按钮事件
+            playPauseBtn.addEventListener('click', togglePlayPause);
+            settingsBtn.addEventListener('click', exitFullscreenMode);
+            exitFullscreenBtn.addEventListener('click', exitFullscreenMode);
+            
+            // 音量控制
+            volumeSlider.addEventListener('input', setVolume);
+            volumeIcon.addEventListener('click', function() {
+                if (volumeSlider.value > 0) {
+                    volumeSlider.value = 0;
+                } else {
+                    volumeSlider.value = currentVolume > 0 ? currentVolume : 0.7;
+                }
+                setVolume();
+            });
+            
+            // 鼠标移动显示控制面板
+            document.addEventListener('mousemove', function() {
+                if (isFullscreen) {
+                    showControlPanel();
+                }
+            });
+            
+            // 键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                if (!isFullscreen) return;
+                
+                if (e.key === 'Escape') {  // ESC退出
+                    exitFullscreenMode();
+                }
+                if (e.key === ' ') {       // 空格暂停/播放
+                    togglePlayPause();
+                    e.preventDefault();
+                }
+                if (e.key === 'ArrowUp') { // 上箭头增加音量
+                    volumeSlider.value = Math.min(1, parseFloat(volumeSlider.value) + 0.05);
+                    setVolume();
+                    e.preventDefault();
+                }
+                if (e.key === 'ArrowDown') { // 下箭头减少音量
+                    volumeSlider.value = Math.max(0, parseFloat(volumeSlider.value) - 0.05);
+                    setVolume();
+                    e.preventDefault();
+                }
+            });
+            
+            // 全屏变化监听
+            document.addEventListener('fullscreenchange', function() {
+                isFullscreen = !!document.fullscreenElement;
+                
+                if (!isFullscreen) {
+                    exitFullscreenMode();
+                }
+            });
+            
+            // 时间更新定时器
+            setInterval(updateDateTime, 1000);
+        });
+    </script>
+</body>
+</html>
